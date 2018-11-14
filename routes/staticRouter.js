@@ -3,6 +3,13 @@ const { Router } = require("express");
 const staticRouter = Router();
 
 staticRouter.route("/").get((req, res) => {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return res.render("index", {
+      name,
+      username,
+      email
+    });
+  }
   res.redirect("/login");
 });
 
