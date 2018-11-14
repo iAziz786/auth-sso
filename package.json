@@ -1,0 +1,40 @@
+{
+  "name": "auth-sso",
+  "version": "0.1.0",
+  "description": "Single Sign-Out Authentication Server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iAziz786/auth-sso.git"
+  },
+  "author": "Mohammad Aziz",
+  "bugs": {
+    "url": "https://github.com/iAziz786/auth-sso/issues"
+  },
+  "homepage": "https://github.com/iAziz786/auth-sso#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "chalk": "^2.4.1",
+    "cors": "^2.8.4",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "hbs": "^4.0.1",
+    "mongoose": "^5.3.9",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.5",
+    "nyc": "^13.1.0",
+    "supertest": "^3.3.0"
+  },
+  "jest": {
+    "verbose": true
+  }
+}
