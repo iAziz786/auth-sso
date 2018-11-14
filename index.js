@@ -2,6 +2,10 @@ const http = require('http');
 const chalk = require('chalk').default;
 
 const app = require('./app');
+
+app.set('views', './views');
+app.set('view engine', 'pug');
+
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(app);
