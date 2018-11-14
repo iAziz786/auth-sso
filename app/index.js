@@ -21,7 +21,7 @@ app.set('port', process.env.PORT);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
-app.use(logger('combined'));
+app.use(logger('dev'));
 app.use(express.static(publicPath));
 
 app.use('/', router);
