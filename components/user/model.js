@@ -1,5 +1,9 @@
-const { Schema } = require('mongoose');
-const { mainConnection } = require('../../config/mongoose.config');
+const { Schema } = require("mongoose");
+
+const comparePassword = require("./comparePassword");
+const createNew = require("./createNew");
+const preSave = require("./preSave");
+const { mainConnection } = require("../../config/mongoose.config");
 
 const UserSchema = new Schema({
   name: {
@@ -13,13 +17,20 @@ const UserSchema = new Schema({
 
   username: {
     type: String,
+    required: true
   },
 
   password: {
     type: String,
     required: true
   }
-})
+});
 
-const User = mainConnection.model('User', UserSchema);
+UserSchema.statics.createNew = createNew; 
+
+UserSchema.pre("save", preSave);
+
+UserSchema.methods.comparePassword = comparePassword; 
+
+const User = mainConnection.model("User", UserSchema);
 exports.User = User;

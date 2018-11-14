@@ -1,37 +1,52 @@
-const request = require('supertest');
-const { User } = require('../components/user/model');
+const request = require("supertest");
+const { mainConnection } = require("../config/mongoose.config");
 
-const app = require('../app');
+const app = require("../app");
 
-describe('apiRouter', () => {
-  describe('/api/data', () => {
-    it('just verify that server is responding some data', (done) => {
-      request(app)
-        .get('/api/data')
-        .then((res) => {
-          expect(res.text).toEqual(JSON.stringify({ message: 'Hello!' }))
-          done();
+const fakeUser = {
+  email: "test@gmail.com",
+  username: "test",
+  password: "supersecretpasswordhere"
+};
+
+describe("apiRouter", () => {
+  describe("/api/data", () => {
+    it("just verify that server is responding some data", () => {
+      return request(app)
+        .get("/api/data")
+        .then(res => {
+          expect(res.text).toEqual(JSON.stringify({ message: "Hello!" }));
         });
     });
   });
 
-  afterAll((done) => {
-    User.findOneAndDelete({ email: 'mdaziz067@gmail.com' }).then(done);
-  })
-  describe('/api/signup', () => {
-    it('will sign up new users when correct data provided', (done) => {
-      request(app)
-        .post('/api/signup')
-        .send({ email: 'mdaziz067@gmail.com', password: 'abscddsadfa' })
-        .then((res) => {
-          const { user } = res.body;
-          expect(user).toHaveProperty('email');
-          done();
-        });
-    })
+  afterAll(() => {
+    return Promise.all([mainConnection.dropCollection("users")]);
   });
 
-  describe('/api/login', () => {
+  describe("/api/signup", () => {
+    it("will sign up new users when correct data provided", async () => {
+      return request(app)
+        .post("/api/signup")
+        .send(fakeUser)
+        .then(res => {
+          const { user } = res.body;
+          expect(user).toHaveProperty("email");
+          expect(user).toHaveProperty("username");
+          expect(user).not.toHaveProperty("password");
+        });
+    });
+  });
 
+  describe("/api/login", () => {
+    it("login user if correct credentials provided", async () => {
+      return request(app)
+        .post("/api/login")
+        .send({ username: fakeUser.email, password: fakeUser.password })
+        .expect(200)
+        .then(res => {
+          expect(res.body.success).toBeTruthy();
+        });
+    });
   });
 });
