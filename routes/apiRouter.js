@@ -26,9 +26,9 @@ apiRouter.post("/signup", async (req, res) => {
     user = await User.createNew({ email, username, password })
   } catch (err) {}
   if (user == null) {
-    return res.status(404).json({
+    return res.status(409).json({
       error: true,
-      message: "user not found"
+      message: "user already exists with details"
     })
   }
 
@@ -66,7 +66,7 @@ apiRouter.route("/login").post(async (req, res) => {
     })
   }
 
-  return res.status(404).json({
+  return res.status(401).json({
     error: true,
     message: "authentication failed"
   })
