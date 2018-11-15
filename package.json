@@ -33,6 +33,7 @@
     "validator": "^10.9.0"
   },
   "devDependencies": {
+    "coveralls": "^3.0.2",
     "jest": "^23.6.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.6",
