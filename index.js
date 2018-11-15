@@ -1,17 +1,17 @@
-const http = require('http');
-const chalk = require('chalk').default;
+const http = require("http")
+const chalk = require("chalk").default
 
-const app = require('./app');
+const app = require("./app")
 
-app.set('views', './views');
-app.set('view engine', 'pug');
+app.set("views", "./views")
+app.set("view engine", "pug")
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000
 
-const server = http.createServer(app);
+const server = http.createServer(app)
 
-server.listen(app.get('port'), () => {
-  console.log(chalk.green(`App is running on port http://localhost:${PORT}`));
-});
+server.listen(app.get("port"), () => {
+  console.log(chalk.green(`App is running on port http://localhost:${PORT}`))
+})
 
-module.exports = server;
+module.exports = server

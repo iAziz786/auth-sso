@@ -1,5 +1,5 @@
 module.exports = {
   coverageDirectory: "./coverage",
-  coverageReporters: ["text-lcov"], 
+  coverageReporters: ["text-lcov"],
   collectCoverage: true
 }

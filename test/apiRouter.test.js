@@ -14,7 +14,7 @@ describe("apiRouter", () => {
     await Promise.all([mainConnection.dropCollection("users")]).then(() =>
       // closing connection forcefully other jest not exiting
       mainConnection.close(true)
-    ) 
+    )
   })
 
   describe("/api/data", async () => {
