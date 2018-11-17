@@ -1,12 +1,12 @@
-const _ = require("lodash")
-const isEmail = require("validator/lib/isEmail")
+const { omit } = require("lodash")
 const { Router } = require("express")
 
 const { User } = require("../components/user/model")
+const passportLocalLogin = require("../middlewares/passportLocalLogin");
 
 const apiRouter = Router()
 
-apiRouter.get("/data", (req, res) => {
+apiRouter.get("/test", (req, res) => {
   res.json({
     message: "Hello!"
   })
@@ -32,40 +32,20 @@ apiRouter.post("/signup", async (req, res) => {
     })
   }
 
-  res.json({ success: true, user: _.omit(user.toJSON(), ["password"]) })
+  res.json({ success: true, user: omit(user.toJSON(), ["password"]) })
 })
 
-apiRouter.route("/login").post(async (req, res) => {
-  const { username, password } = req.body
-  if (!username || !password) {
-    return res.status(403).json({
-      error: true,
-      message: "username or password not provided"
-    })
-  }
+apiRouter
+  .route("/login")
+  .post(passportLocalLogin, async (req, res) => {
 
-  let user
-  if (isEmail(username)) {
-    user = await User.findOne({ email: username })
-  } else {
-    user = await User.findOne({ username })
-  }
-
-  if (user == null) {
-    return res.status(404).json({
-      error: true,
-      message: "user not found"
-    })
-  }
-
-  const authenticated = await user.comparePassword(password)
-  if (authenticated) {
+  if (req.isAuthenticated()) {
     return res.json({
       success: true,
-      name: user.name
+      user: omit(req.user, ["password"]) 
     })
   }
-
+  // Ideally, route wouldn't hit this return but just to be safe sending this
   return res.status(401).json({
     error: true,
     message: "authentication failed"

@@ -17,9 +17,9 @@ describe("apiRouter", () => {
     )
   })
 
-  describe("/api/data", async () => {
+  describe("/api/test", async () => {
     it("just verify that server is responding some data", async () => {
-      const res = await request(app).get("/api/data")
+      const res = await request(app).get("/api/test")
       expect(res.text).toEqual(JSON.stringify({ message: "Hello!" }))
     })
   })
@@ -85,7 +85,7 @@ describe("apiRouter", () => {
       const res = await request(app)
         .post("/api/login")
         .send({ username: 'notpresentusername' , password: 'somewrongpassword' })
-        .expect(404)
+        .expect(401)
       expect(res.body).toHaveProperty("error")
       expect(res.body.error).toBe(true)
     })
