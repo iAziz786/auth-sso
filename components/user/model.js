@@ -3,6 +3,7 @@ const { Schema } = require("mongoose");
 const comparePassword = require("./comparePassword");
 const createNew = require("./createNew");
 const preSave = require("./preSave");
+const findByUsername = require("./findByUsername");
 const { mainConnection } = require("../../config/mongoose.config");
 
 const UserSchema = new Schema({
@@ -29,6 +30,7 @@ const UserSchema = new Schema({
 });
 
 UserSchema.statics.createNew = createNew; 
+UserSchema.statics.findByUsername = findByUsername;
 
 UserSchema.pre("save", preSave);
 
