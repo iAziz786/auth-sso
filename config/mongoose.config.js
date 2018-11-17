@@ -7,7 +7,8 @@ mongoose.Promise = global.Promise
 const mainUri = process.env.MONGODB_MAIN_URI
 
 const mainConnection = mongoose.createConnection(mainUri, {
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useCreateIndex: true
 })
 
 exports.mainConnection = mainConnection
