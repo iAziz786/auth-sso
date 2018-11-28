@@ -7,8 +7,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "jest",
-    "eslint": "eslint",
-    "prettier": "prettier \"**/*.+(js|css|html)\""
+    "eslint": "eslint --fix",
+    "prettier": "prettier \"**/*.+(js|css|html|yml|yaml|less|sass|ts)\"",
+    "validate": "prettier -- --list-different"
   },
   "repository": {
     "type": "git",
@@ -59,8 +60,10 @@
     }
   },
   "lint-staged": {
-    "*.{js, json, css, md}": [
-      "eslint --fix",
+    "*.{js}": [
+      "eslint"
+    ],
+    "**/*.+(js|css|html|yml|yam|less|sass|ts)": [
       "prettier --write",
       "git add"
     ]
