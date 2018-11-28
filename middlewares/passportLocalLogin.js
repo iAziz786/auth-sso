@@ -1,10 +1,6 @@
 const passport = require("passport")
 const { pick } = require("lodash")
 
-const { localStrategy } = require("../services/passport")
-
-passport.use(localStrategy)
-
 function passportLocalLogin(req, res, next) {
   const { username, password } = req.body
   if (!username || !password) {
