@@ -2,9 +2,6 @@ const http = require("http")
 const chalk = require("chalk").default
 const passport = require('passport');
 
-passport.initialize();
-passport.session();
-
 const app = require("./app")
 
 app.set("views", "./views")
