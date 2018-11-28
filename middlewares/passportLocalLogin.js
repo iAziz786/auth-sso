@@ -1,5 +1,4 @@
 const passport = require("passport")
-const { pick } = require("lodash")
 
 function passportLocalLogin(req, res, next) {
   const { username, password } = req.body
@@ -11,7 +10,9 @@ function passportLocalLogin(req, res, next) {
   }
 
   passport.authenticate("local", (err, user) => {
-    if (err) { next(err); }
+    if (err) {
+      next(err)
+    }
 
     if (!user) {
       return res.status(401).json({

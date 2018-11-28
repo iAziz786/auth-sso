@@ -2,7 +2,7 @@ const { omit } = require("lodash")
 const { Router } = require("express")
 
 const { User } = require("../components/user/model")
-const passportLocalLogin = require("../middlewares/passportLocalLogin");
+const passportLocalLogin = require("../middlewares/passportLocalLogin")
 
 const apiRouter = Router()
 
@@ -35,14 +35,11 @@ apiRouter.post("/signup", async (req, res) => {
   res.json({ success: true, user: omit(user.toJSON(), ["password"]) })
 })
 
-apiRouter
-  .route("/login")
-  .post(passportLocalLogin, async (req, res) => {
-
+apiRouter.route("/login").post(passportLocalLogin, async (req, res) => {
   if (req.isAuthenticated()) {
     return res.json({
       success: true,
-      user: omit(req.user, ["password"]) 
+      user: omit(req.user, ["password"])
     })
   }
   // Ideally, route wouldn't hit this return but just to be safe sending this

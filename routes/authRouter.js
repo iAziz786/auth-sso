@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { User } = require('../components/user/model')
+const { User } = require("../components/user/model")
 const passport = require("passport")
 
 const authRouter = Router()
@@ -37,10 +37,10 @@ authRouter.post("/signup", async (req, res) => {
   })
 })
 
-authRouter.get('/logout', (req, res) => {
+authRouter.get("/logout", (req, res) => {
   req.logout()
   req.session = null
-  res.redirect('back');
+  res.redirect("back")
 })
 
 module.exports = authRouter
