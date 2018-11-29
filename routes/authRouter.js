@@ -1,16 +1,16 @@
 const { Router } = require("express")
 const { User } = require("../components/user/model")
-const passport = require("passport")
 
+const passportLocalLogin = require("../middlewares/passportLocalLogin")
 const authRouter = Router()
 
-authRouter.post(
-  "/login",
-  passport.authenticate("local", {
-    failureRedirect: "/login",
-    successRedirect: "/"
-  })
-)
+authRouter.post("/login", passportLocalLogin, (req, res) => {
+  if (req.session && req.session.returnTo) {
+    return res.redirect(req.session.returnTo)
+  }
+})
+
+// authRouter.post("/client/register", (req, res) => {})
 
 authRouter.post("/signup", async (req, res) => {
   const { email, password, username } = req.body
