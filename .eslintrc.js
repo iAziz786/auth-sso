@@ -8,6 +8,7 @@ module.exports = {
     ecmaVersion: 2018
   },
   rules: {
-    "linebreak-style": ["error", "unix"]
+    "linebreak-style": ["error", "unix"],
+    "no-console": ["warn"]
   }
 }
