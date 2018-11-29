@@ -30,7 +30,7 @@ app.use(cookieParser())
 app.use(
   cookieSession({
     name: "session",
-    keys: ["talking to the moon"],
+    keys: [process.env.COOKIE_SECRET],
     maxAge: ms("30 days")
   })
 )
