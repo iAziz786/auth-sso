@@ -2,7 +2,6 @@ const passport = require("passport")
 const LocalStrategy = require("passport-local").Strategy
 const { User } = require("../components/user/model")
 
-
 const localStrategy = new LocalStrategy(async (username, password, done) => {
   let user
   try {
@@ -29,7 +28,7 @@ passport.deserializeUser(async (userId, done) => {
   try {
     const user = await User.findById(userId)
     if (typeof user === "object" && user != null) {
-      done(null, user)
+      return done(null, user)
     }
     done(null, false)
   } catch (err) {
