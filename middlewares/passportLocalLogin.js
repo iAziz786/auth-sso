@@ -25,6 +25,9 @@ function passportLocalLogin(req, res, next) {
       if (err) {
         return next(err)
       }
+      if (req.session && req.session.returnTo) {
+        return res.redirect(req.session.returnTo)
+      }
       next()
     })
   })(req, res, next)
