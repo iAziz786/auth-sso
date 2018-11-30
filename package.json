@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon",
     "test": "jest",
     "eslint": "eslint --fix",
     "prettier": "prettier \"**/*.+(js|css|html|yml|yaml|less|sass|ts)\"",
