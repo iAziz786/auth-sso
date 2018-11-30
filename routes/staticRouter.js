@@ -1,6 +1,9 @@
 const { Router } = require("express")
+const login = require("connect-ensure-login")
 
+const { Client } = require("../components/client/modal")
 const redirectIfAuthenticated = require("../middlewares/redirectIfAuthenticated")
+const registerNewClient = require("../middlewares/registerNewClient")
 
 const staticRouter = Router()
 
@@ -8,7 +11,7 @@ const allowedService = [
   { name: "feedwee", follow: "https://feedwee.herokuapp.com" }
 ]
 
-staticRouter.route("/").get((req, res) => {
+staticRouter.get("/", (req, res) => {
   if (req.isAuthenticated && req.isAuthenticated()) {
     const { name, username, email } = req.user
     return res.render("account", {
@@ -20,18 +23,39 @@ staticRouter.route("/").get((req, res) => {
   res.render("index")
 })
 
-staticRouter.route("/login").get(redirectIfAuthenticated, (req, res) => {
+staticRouter.get("/login", redirectIfAuthenticated, (req, res) => {
   res.render("login")
 })
 
-staticRouter.route("/signup").get(redirectIfAuthenticated, (req, res) => {
+staticRouter.get("/signup", redirectIfAuthenticated, (req, res) => {
   res.render("signup")
 })
 
-staticRouter.route("/service_login").get((req, res) => {
+staticRouter.get("/404", (req, res) => {
+  res.render("404")
+})
+
+staticRouter.use(login.ensureLoggedIn())
+staticRouter
+  .route("/client/register")
+  .get(async (req, res) => {
+    try {
+      const clients = await Client.findByOwner(req.user._id)
+      return res.render("client/register", {
+        clients
+      })
+    } catch (err) {
+      throw err
+    }
+  })
+  .post(registerNewClient(), (req, res) => {
+    res.redirect("back")
+  })
+
+staticRouter.get("service_login", (req, res) => {
   const { service, follow } = req.query
   if (!service || !follow) {
-    res.redirect("/")
+    return res.redirect("/")
   }
   const didMatch = allowedService.some((serviceDetails) => {
     return (
@@ -43,10 +67,6 @@ staticRouter.route("/service_login").get((req, res) => {
     return res.render("service_login")
   }
   return res.redirect("/404")
-})
-
-staticRouter.route("/404").get((req, res) => {
-  res.render("404")
 })
 
 module.exports = staticRouter
