@@ -8,6 +8,7 @@ authRouter.post("/login", passportLocalLogin, (req, res) => {
   if (req.session && req.session.returnTo) {
     return res.redirect(req.session.returnTo)
   }
+  res.redirect("/")
 })
 
 // authRouter.post("/client/register", (req, res) => {})
