@@ -1,15 +1,13 @@
 const { Router } = require("express")
+const passport = require("passport")
 const { User } = require("../components/user/model")
 
-const passportLocalLogin = require("../middlewares/passportLocalLogin")
 const authRouter = Router()
 
-authRouter.post("/login", passportLocalLogin, (req, res) => {
-  if (req.session && req.session.returnTo) {
-    return res.redirect(req.session.returnTo)
-  }
-  res.redirect("/")
-})
+authRouter.post(
+  "/login",
+  passport.authenticate("local", { successReturnToOrRedirect: true })
+)
 
 // authRouter.post("/client/register", (req, res) => {})
 
