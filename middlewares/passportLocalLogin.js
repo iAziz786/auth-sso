@@ -9,25 +9,29 @@ function passportLocalLogin(req, res, next) {
     })
   }
 
-  passport.authenticate("local", (err, user) => {
-    if (err) {
-      next(err)
-    }
+  passport.authenticate(
+    "local",
+    { successReturnToOrRedirect: true },
+    (err, user) => {
+      if (err) {
+        next(err)
+      }
 
-    if (!user) {
-      return res.status(401).json({
-        error: true,
-        message: "authentication failed"
+      if (!user) {
+        return res.status(401).json({
+          error: true,
+          message: "authentication failed"
+        })
+      }
+
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err)
+        }
+        next()
       })
     }
-
-    req.logIn(user, (err) => {
-      if (err) {
-        return next(err)
-      }
-      next()
-    })
-  })(req, res, next)
+  )(req, res, next)
 }
 
 module.exports = passportLocalLogin
