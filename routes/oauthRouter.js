@@ -18,7 +18,7 @@ oauthRouter.get(
       console.log({ client })
       // if (mathRedirectUri(client, redirect_uri)) {
       const code = generateToken()
-      return res.redirect(`${redirect_uri}?code${code}`)
+      return res.redirect(`${redirect_uri}?code=${code}`)
       // }
       return res.render("404")
     } catch (err) {
