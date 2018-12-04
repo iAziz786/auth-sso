@@ -1,3 +1,4 @@
+const path = require("path")
 const { Router } = require("express")
 const login = require("connect-ensure-login")
 
@@ -21,6 +22,10 @@ staticRouter.get("/", (req, res) => {
     })
   }
   res.render("index")
+})
+
+staticRouter.get("/robots.txt", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "..", "public", "robots.txt"))
 })
 
 staticRouter.get("/login", redirectIfAuthenticated, (req, res) => {
@@ -52,7 +57,7 @@ staticRouter
     res.redirect("back")
   })
 
-staticRouter.get("service_login", (req, res) => {
+staticRouter.get("/dialog", (req, res) => {
   const { service, follow } = req.query
   if (!service || !follow) {
     return res.redirect("/")
@@ -64,7 +69,7 @@ staticRouter.get("service_login", (req, res) => {
     )
   })
   if (didMatch) {
-    return res.render("service_login")
+    return res.render("dialog")
   }
   return res.redirect("/404")
 })
