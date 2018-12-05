@@ -1,4 +1,5 @@
 const { Router } = require("express")
+const jwt = require("jsonwebtoken")
 
 const oauthServer = require("../middlewares/oauthServer")
 const { Client } = require("../components/client/modal")
@@ -18,7 +19,27 @@ oauthRouter.get(
       console.log({ client })
       // if (mathRedirectUri(client, redirect_uri)) {
       const code = generateToken()
-      return res.redirect(`${redirect_uri}?code=${code}&state=${state}`)
+      jwt.sign(
+        {
+          iss: process.env.AUTH_SERVER,
+          sub: "sioafjiasdfiosf",
+          aud: client_id,
+          iat: Date.now(),
+          name: "Aziz",
+          family_name: "Mohammad",
+          dob: "01-01-1991",
+          email: "test@gmail.com",
+          email_verified: true
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1 hour" },
+        (err, id_token) => {
+          if (err) throw err
+          return res.redirect(
+            `${redirect_uri}?code=${code}&state=${state}&id_token=${id_token}`
+          )
+        }
+      )
       // }
       return res.render("404")
     } catch (err) {
