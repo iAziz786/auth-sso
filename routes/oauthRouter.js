@@ -38,10 +38,10 @@ oauthRouter.get(
           return res.redirect(
             `${redirect_uri}?code=${code}&state=${state}&id_token=${id_token}`
           )
+          return res.render("404")
         }
       )
       // }
-      return res.render("404")
     } catch (err) {
       return res.render("404")
     }
