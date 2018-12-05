@@ -19,29 +19,9 @@ oauthRouter.get(
       console.log({ client })
       // if (mathRedirectUri(client, redirect_uri)) {
       const code = generateToken()
-      jwt.sign(
-        {
-          iss: process.env.AUTH_SERVER,
-          sub: "sioafjiasdfiosf",
-          aud: client_id,
-          iat: Date.now(),
-          name: "Aziz",
-          family_name: "Mohammad",
-          dob: "01-01-1991",
-          email: "test@gmail.com",
-          email_verified: true
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "1 hour" },
-        (err, id_token) => {
-          if (err) throw err
-          return res.redirect(
-            `${redirect_uri}?code=${code}&state=${encodeURIComponent(
-              state
-            )}&id_token=${id_token}`
-          )
-          return res.render("404")
-        }
+
+      return res.redirect(
+        `${redirect_uri}?code=${code}&state=${encodeURIComponent(state)}`
       )
       // }
     } catch (err) {
@@ -54,8 +34,31 @@ oauthRouter.get(
   //   res.redirect(`${redirect_uri}?code=${code[0].value}&state=${state}`)
   // }
 )
-oauthRouter.post("/oauth/token", (req, res) => {
-  res.status(200).json({ token: generateToken() })
+oauthRouter.post("/oauth/token", (req, res, next) => {
+  const { client_id } = req.body
+  jwt.sign(
+    {
+      iss: process.env.AUTH_SERVER,
+      sub: "sioafjiasdfiosf",
+      aud: client_id,
+      iat: Date.now(),
+      name: "Aziz",
+      family_name: "Mohammad",
+      dob: "01-01-1991",
+      email: "test@gmail.com",
+      email_verified: true
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1 hour" },
+    (err, id_token) => {
+      if (err) throw next(err)
+      res.status(200).json({
+        id_token,
+        access_token: generateToken(),
+        refresh_token: generateToken()
+      })
+    }
+  )
 })
 
 module.exports = oauthRouter
