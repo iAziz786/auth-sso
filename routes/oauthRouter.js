@@ -36,7 +36,9 @@ oauthRouter.get(
         (err, id_token) => {
           if (err) throw err
           return res.redirect(
-            `${redirect_uri}?code=${code}&state=${state}&id_token=${id_token}`
+            `${redirect_uri}?code=${code}&state=${encodeURIComponent(
+              state
+            )}&id_token=${id_token}`
           )
           return res.render("404")
         }
