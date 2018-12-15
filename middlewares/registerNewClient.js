@@ -11,7 +11,7 @@ function registerNewClient() {
       query: { projectId }
     } = req
     try {
-      await Client.create({
+      const client = await Client.create({
         clientId: ObjectId(),
         clientSecret: createPassword(48),
         ownerId: req.user._id,
@@ -19,6 +19,7 @@ function registerNewClient() {
         projectId,
         redirectUri: [redirectUri]
       })
+      req.client = client
       next()
     } catch (err) {
       next(err)

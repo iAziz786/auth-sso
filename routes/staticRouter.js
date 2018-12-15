@@ -135,7 +135,7 @@ staticRouter
     }
   })
   .post(registerNewClient(), (req, res) => {
-    res.redirect("back")
+    res.redirect(`/oauthclient/${req.client._id}`)
   })
 
 staticRouter.get("/dialog", (req, res) => {
