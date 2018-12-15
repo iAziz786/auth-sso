@@ -6,11 +6,18 @@ function registerNewClient() {
     const {
       Types: { ObjectId }
     } = require("mongoose")
+    const {
+      body: { name, redirectUri },
+      query: { projectId }
+    } = req
     try {
       await Client.create({
         clientId: ObjectId(),
         clientSecret: createPassword(48),
-        ownerId: req.user._id
+        ownerId: req.user._id,
+        name,
+        projectId,
+        redirectUri: [redirectUri]
       })
       next()
     } catch (err) {

@@ -1,19 +1,25 @@
-const {
-  Schema,
-  Types: { ObjectId }
-} = require("mongoose")
+const { Schema } = require("mongoose")
+
+const { ObjectId } = Schema.Types
 
 const { mainConnection } = require("../../config/mongoose.config")
 const findByOwner = require("./findByOwner")
 
 const ClientSchema = new Schema({
   name: {
-    type: String
+    type: String,
+    required: true
   },
 
   ownerId: {
     type: ObjectId,
     ref: "User",
+    required: true
+  },
+
+  projectId: {
+    type: ObjectId,
+    ref: "Project",
     required: true
   },
 

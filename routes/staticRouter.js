@@ -3,6 +3,7 @@ const { Router } = require("express")
 const login = require("connect-ensure-login")
 
 const { Client } = require("../components/client/modal")
+const { Project } = require("../components/project/modal")
 const redirectIfAuthenticated = require("../middlewares/redirectIfAuthenticated")
 const registerNewClient = require("../middlewares/registerNewClient")
 
@@ -41,6 +42,86 @@ staticRouter.get("/404", (req, res) => {
 })
 
 staticRouter.use(login.ensureLoggedIn())
+staticRouter.route("/project/all").get(async (req, res) => {
+  const {
+    user: { _id: userId }
+  } = req
+  try {
+    const projects = await Project.findByOwner(userId)
+    return res.render("project/list", {
+      projects
+    })
+  } catch (err) {
+    throw err
+  }
+})
+
+staticRouter
+  .route("/project/new")
+  .get(async (req, res) => {
+    res.render("project/new")
+  })
+  .post(async (req, res) => {
+    const {
+      user: { _id: userId },
+      body: { name }
+    } = req
+    try {
+      await Project.create({
+        name,
+        ownerId: userId
+      })
+      res.redirect("/project/all")
+    } catch (err) {
+      throw err
+    }
+  })
+
+staticRouter.route("/project").get(async (req, res) => {
+  const {
+    query: { projectId }
+  } = req
+  const [project, clients] = await Promise.all([
+    Project.findById(projectId),
+    Client.find({ projectId })
+      .select("-clientSecret")
+      .select("-redirectUri")
+  ])
+  return res.render("project/details", {
+    project,
+    clients: clients.length ? clients : []
+  })
+})
+
+staticRouter
+  .route("/oauthclient")
+  .get(async (req, res) => {
+    const {
+      query: { projectId }
+    } = req
+    const project = await Project.findById(projectId)
+    return res.render("client/register", { project })
+  })
+  .post((req, res) => {
+    const {
+      query: { projectId }
+    } = req
+  })
+
+staticRouter.route("/oauthclient/:clientId").get(async (req, res) => {
+  const {
+    params: { clientId }
+  } = req
+  try {
+    const client = await Client.findById(clientId)
+    res.render("client/details", {
+      client: client ? client : {}
+    })
+  } catch (err) {
+    throw err
+  }
+})
+
 staticRouter
   .route("/client/register")
   .get(async (req, res) => {
