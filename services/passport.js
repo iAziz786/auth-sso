@@ -26,7 +26,7 @@ passport.deserializeUser(async (userId, done) => {
   try {
     const user = await User.findById(userId).then((user) => {
       if (user) {
-        user.toJSON()
+        return user.toJSON()
       }
     })
     if (typeof user === "object" && user != null) {
