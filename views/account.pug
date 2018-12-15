@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-html(lang="en")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    meta(http-equiv="X-UA-Compatible", content="ie=edge")
+include ./includes/header.pug
+
+block title
     title Authentication Server
-  body
-    div
-      include navbar.pug
-      h1=name
-      p=email
-      p=username
-      p To see all your projects 
-        a(href="/project/all") go here 
+block body
+  div
+    include ./includes/navbar.pug
+    h1=name
+    p=email
+    p=username
+    p To see all your projects 
+      a(href="/project/all") go here 
