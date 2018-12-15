@@ -8,18 +8,9 @@ html(lang="en")
   body
     div
       h1 Register a client
-      form(action="/client/register", method="post")
-        input(type="hidden", name="createClient")
+      form(action=`/client/register?projectId=${project._id}`, method="post")
+        input(type="text", name="name" placeholder="Application Name" required autocomplete="off")
+        br
+        input(type="url", name="redirectUri" placeholder="Redirect URI" required)
+        br
         input(type="submit", value="Add New")
-      
-      div
-        each client, index in clients
-          div(style="border: 1px solid blue; margin-top: 5px; padding: 10px")
-            strong #{index + 1}
-            p
-              strong ClientID: 
-              |#{client.clientId}
-            p
-              strong Secret: 
-              |#{client.clientSecret}
-            a(href="/client/edit/" + client.id) Edit

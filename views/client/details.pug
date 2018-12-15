@@ -1,0 +1,20 @@
+include ../includes/header.pug
+
+block title
+  title Client Details
+
+block body
+  h2 You clients details are
+  div
+    div(style="border: 1px solid blue; margin-top: 5px; padding: 10px")
+      p
+        strong Name: 
+        |#{client.name}
+      p
+        strong ClientID: 
+        |#{client.clientId}
+      p
+        strong Secret: 
+        |#{client.clientSecret}
+      each redirectUri in client.redirectUri
+        li #{redirectUri}

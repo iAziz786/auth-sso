@@ -1,0 +1,19 @@
+include ../includes/header
+
+block title
+  title Project Details
+
+block body
+  h2 #{project.name} 
+  a(href="/oauthclient?projectId=" + project._id) &#43; Client
+  div
+    each client, index in clients
+      a(href=`/oauthclient/${client._id}`)
+        div(style="border: 1px solid blue; margin-top: 5px; padding: 10px")
+          strong #{index + 1}
+          p
+            strong Name:  
+            |#{client.name}
+          p
+            strong Secret: 
+            |#{client.clientSecret}

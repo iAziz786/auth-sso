@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible", content="ie=edge")
+    title All projects 
+  body
+    div
+      h2 Here are all the projects you have created
+      a(href="/project/new") &#43; Project
+      
+      div
+        each project in projects
+          a(href="/project?projectId=" + project._id)
+            div(style="border: 1px solid blue; margin-top: 5px; padding: 10px")
+              p
+                strong #{project.name}
+
