@@ -18,14 +18,17 @@ const localStrategy = new LocalStrategy(async (username, password, done) => {
 })
 
 passport.use(localStrategy)
-
 passport.serializeUser((user, done) => {
   done(null, user._id)
 })
 
 passport.deserializeUser(async (userId, done) => {
   try {
-    const user = (await User.findById(userId)).toJSON()
+    const user = await User.findById(userId).then((user) => {
+      if (user) {
+        user.toJSON()
+      }
+    })
     if (typeof user === "object" && user != null) {
       return done(null, user)
     }
