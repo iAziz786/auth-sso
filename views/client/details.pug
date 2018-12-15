@@ -16,5 +16,7 @@ block body
       p
         strong Secret: 
         |#{client.clientSecret}
+      p
+        strong Redirect URLs:
       each redirectUri in client.redirectUri
         li #{redirectUri}
