@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-html(lang="en")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    meta(http-equiv="X-UA-Compatible", content="ie=edge")
+include ../includes/header.pug
+
+block title
     title Register Client
-  body
-    div
-      h1 Register a client
-      form(action=`/client/register?projectId=${project._id}`, method="post")
-        input(type="text", name="name" placeholder="Application Name" required autocomplete="off")
-        br
-        input(type="url", name="redirectUri" placeholder="Redirect URI" required)
-        br
-        input(type="submit", value="Add New")
+block body
+  div
+    h1 Register a client
+    form(action=`/client/register?projectId=${project._id}`, method="post")
+      input(type="text", name="name" placeholder="Application Name" required autocomplete="off")
+      br
+      input(type="url", name="redirectUri" placeholder="Redirect URI" required)
+      br
+      input(type="submit", value="Add New")
