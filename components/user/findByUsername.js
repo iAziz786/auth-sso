@@ -7,13 +7,16 @@ async function findByUsername(username) {
   }
 
   let user
-  if (isEmail(username)) {
-    user = await User.findOne({ email: username })
-  } else {
-    user = await User.findOne({ username })
+  try {
+    if (isEmail(username)) {
+      user = await User.findOne({ "email.value": username })
+    } else {
+      user = await User.findOne({ username })
+    }
+    return user
+  } catch (err) {
+    throw err
   }
-
-  return user
 }
 
 module.exports = findByUsername

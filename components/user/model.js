@@ -1,40 +1,141 @@
-const { Schema } = require("mongoose");
+const { Schema } = require("mongoose")
 
-const comparePassword = require("./comparePassword");
-const createNew = require("./createNew");
-const preSave = require("./preSave");
-const findByUsername = require("./findByUsername");
-const { mainConnection } = require("../../config/mongoose.config");
+const comparePassword = require("./comparePassword")
+const createNew = require("./createNew")
+const preSave = require("./preSave")
+const findByUsername = require("./findByUsername")
+const { mainConnection } = require("../../config/mongoose.config")
 
-const UserSchema = new Schema({
-  name: {
+const emailSchema = new Schema(
+  {
+    value: {
+      type: String,
+      unique: true,
+      required: true
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
+    }
+  },
+  { _id: false }
+)
+
+const phoneSchema = new Schema(
+  {
+    value: {
+      type: String,
+      unique: true,
+      required: true
+    },
+
+    isVerified: {
+      type: Boolean,
+      default: false
+    }
+  },
+  { _id: false }
+)
+
+const addressSchema = new Schema({
+  formatted: {
     type: String
   },
 
-  email: {
-    type: String,
-    unique: true,
-    required: true
+  streetAddress: {
+    type: String
   },
 
-  username: {
-    type: String,
-    unique: true,
-    required: true
+  locality: {
+    type: String
   },
 
-  password: {
-    type: String,
-    required: true
+  region: {
+    type: String
+  },
+
+  postalCode: {
+    type: String
+  },
+
+  country: {
+    type: String
   }
-});
+})
 
-UserSchema.statics.createNew = createNew; 
-UserSchema.statics.findByUsername = findByUsername;
+const UserSchema = new Schema(
+  {
+    name: {
+      type: String
+    },
 
-UserSchema.pre("save", preSave);
+    givenName: {
+      type: String
+    },
 
-UserSchema.methods.comparePassword = comparePassword; 
+    familyName: {
+      type: String
+    },
 
-const User = mainConnection.model("User", UserSchema);
-exports.User = User;
+    nickname: {
+      type: String
+    },
+
+    profile: {
+      type: String
+    },
+
+    picture: {
+      type: String
+    },
+
+    website: {
+      type: String
+    },
+
+    gender: {
+      type: String,
+      enum: ["female", "male", "transgender", "other"]
+    },
+
+    birthdate: {
+      type: Date
+    },
+
+    zoneinfo: {
+      type: String
+    },
+
+    locale: {
+      type: String
+    },
+
+    phoneNumber: phoneSchema,
+
+    address: addressSchema,
+
+    email: emailSchema,
+
+    username: {
+      type: String,
+      unique: true,
+      required: true
+    },
+
+    password: {
+      type: String,
+      required: true
+    }
+  },
+  { timestamps: true }
+)
+
+UserSchema.statics.createNew = createNew
+UserSchema.statics.findByUsername = findByUsername
+
+UserSchema.pre("save", preSave)
+
+UserSchema.methods.comparePassword = comparePassword
+
+const User = mainConnection.model("User", UserSchema)
+exports.User = User

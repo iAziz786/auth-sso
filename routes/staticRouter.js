@@ -19,7 +19,7 @@ staticRouter.get("/", (req, res) => {
     return res.render("account", {
       name,
       username,
-      email
+      email: email.value
     })
   }
   res.render("index")

@@ -20,20 +20,25 @@ authRouter.post("/signup", async (req, res) => {
     })
   }
 
-  let user
   try {
-    user = await User.createNew({ email, username, password })
-  } catch (err) {}
-  if (user == null) {
-    return res.status(409).json({
-      error: true,
-      message: "user already exists with details"
+    const user = await User.createNew({
+      email: { value: email },
+      username,
+      password
     })
+    if (user == null) {
+      return res.status(409).json({
+        error: true,
+        message: "user already exists with details"
+      })
+    }
+    req.login(user, (err) => {
+      if (err) throw err
+      res.redirect("back")
+    })
+  } catch (err) {
+    throw err
   }
-  req.login(user, (err) => {
-    if (err) throw err
-    res.redirect("back")
-  })
 })
 
 authRouter.get("/logout", (req, res) => {
