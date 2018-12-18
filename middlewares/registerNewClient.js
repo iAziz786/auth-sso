@@ -1,4 +1,4 @@
-const { Client } = require("../components/client/modal")
+const { Client } = require("../components/client/model")
 const createPassword = require("../utils/createPassword")
 
 function registerNewClient() {

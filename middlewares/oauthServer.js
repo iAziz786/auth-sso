@@ -2,7 +2,7 @@ const login = require("connect-ensure-login")
 const oauth2orize = require("oauth2orize")
 const oauth2orize_oidc = require("oauth2orize-openid")
 
-const { Client } = require("../components/client/modal")
+const { Client } = require("../components/client/model")
 
 const server = oauth2orize.createServer()
 

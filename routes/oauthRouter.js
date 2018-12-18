@@ -2,7 +2,7 @@ const { Router } = require("express")
 const jwt = require("jsonwebtoken")
 
 const oauthServer = require("../middlewares/oauthServer")
-const { Client } = require("../components/client/modal")
+const { Client } = require("../components/client/model")
 const mathRedirectUri = require("../utils/matchRedirectUri")
 const generateToken = require("../utils/generateToken")
 

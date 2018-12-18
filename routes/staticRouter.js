@@ -2,8 +2,8 @@ const path = require("path")
 const { Router } = require("express")
 const login = require("connect-ensure-login")
 
-const { Client } = require("../components/client/modal")
-const { Project } = require("../components/project/modal")
+const { Client } = require("../components/client/model")
+const { Project } = require("../components/project/model")
 const redirectIfAuthenticated = require("../middlewares/redirectIfAuthenticated")
 const registerNewClient = require("../middlewares/registerNewClient")
 
@@ -41,7 +41,9 @@ staticRouter.get("/404", (req, res) => {
   res.render("404")
 })
 
+// Only let users access the urls below if they are authenticated
 staticRouter.use(login.ensureLoggedIn())
+
 staticRouter.route("/project/all").get(async (req, res) => {
   const {
     user: { _id: userId }
