@@ -1,11 +1,17 @@
-include ../includes/header
+extends ../includes/scaffold
 
 block title
   title Project Details
+block head
+  style
+    include ../dashboard/dashboard.css
+    include ./details.css
 
-block body
-  h2 #{project.name} 
-  a(href="/oauthclient?projectId=" + project._id) &#43; Client
+block innerContent
+  div(class="flex heading")
+    h2 #{project.name} 
+    .grow-1
+      a(href=`/oauthclient?projectId=${project._id}` class="primary-button") Add Client
   div
     each client, index in clients
       a(href=`/oauthclient/${client._id}`)

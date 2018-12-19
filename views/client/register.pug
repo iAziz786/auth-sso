@@ -1,8 +1,8 @@
-include ../includes/header.pug
+extends ../includes/scaffold
 
 block title
     title Register Client
-block body
+block innerContent
   div
     h1 Register a client
     form(action=`/client/register?projectId=${project._id}`, method="post")

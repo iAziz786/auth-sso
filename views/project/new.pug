@@ -1,9 +1,9 @@
-include ../includes/header.pug
+extends ../includes/scaffold.pug
 block title
   title Add a new project
 
-block body
-h2 Happy to see you adding new projects :)
-form(action="/project/new", method="post")
-  input(type="text" name="name")
-  input(type="submit", value="Create")
+block innerContent
+  h2 Happy to see you adding new projects :)
+  form(action="/project/new", method="post")
+    input(type="text" name="name")
+    input(type="submit", value="Create")

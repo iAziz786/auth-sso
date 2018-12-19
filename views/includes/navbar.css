@@ -1,0 +1,9 @@
+.navbar {
+  display: flex;
+  padding: 10 90;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.float-right {
+  margin-left: auto;
+}

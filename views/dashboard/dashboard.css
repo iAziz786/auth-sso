@@ -2,7 +2,7 @@
   display: flex;
 }
 
-.body {
+.grow-1 {
   flex-grow: 1;
 }
 

@@ -1,11 +1,12 @@
-include ../includes/header.pug
+extends ../includes/scaffold.pug
 
 block title
     title All projects 
-block body
+
+block innerContent
   div
     h2 Here are all the projects you have created
-    a(href="/project/new") &#43; Project
+    a(href="/project/new") Add Project 
     
     div
       each project in projects

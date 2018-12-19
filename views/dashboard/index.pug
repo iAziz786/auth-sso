@@ -1,20 +1,12 @@
-include ../includes/header.pug
+extends ../includes/scaffold
 
-block head
-  style
-    include ./dashboard.css
 block title
     title Authentication Server
-block body
-  .flex
-    div
-      include ../sidebar/index.pug
-    .body
-      include ../includes/navbar.pug
-      h1=name
-      p=email
-      p=username
-      p Here is the available options: 
-      div
-        a(href="/project/all" class="secondary-button") Projects
-        a(href="/dashboard" class="primary-button") Dashboard
+block innerContent
+  h1=name
+  p=email
+  p=username
+  p Here is the available options: 
+  div
+    a(href="/project/all" class="secondary-button") Projects
+    a(href="/dashboard" class="primary-button") Dashboard
