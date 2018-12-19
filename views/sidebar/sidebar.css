@@ -1,0 +1,21 @@
+.sidebar {
+  background-color: #0263b7;
+  color: #ffffff;
+  height: 100%;
+}
+
+.sidebar > div {
+  padding-top: 38px;
+}
+
+.sidebar-button {
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 15px;
+}
+
+.sidebar > div > a {
+  display: block;
+  color: #ffffff;
+}
