@@ -16,7 +16,7 @@ const allowedService = [
 staticRouter.get("/", (req, res) => {
   if (req.isAuthenticated && req.isAuthenticated()) {
     const { name, username, email } = req.user
-    return res.render("account", {
+    return res.render("dashboard/index", {
       name,
       username,
       email: email.value
