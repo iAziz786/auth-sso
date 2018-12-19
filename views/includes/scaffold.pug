@@ -1,0 +1,13 @@
+extends ./header.pug
+
+block head
+  style
+    include ../dashboard/dashboard.css
+
+block body
+  .flex
+    div
+      include ../sidebar/index.pug
+    .grow-1
+      include ./navbar.pug
+      block innerContent
