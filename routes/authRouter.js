@@ -42,9 +42,10 @@ authRouter.post("/signup", async (req, res) => {
 })
 
 authRouter.get("/logout", (req, res) => {
-  req.logout()
-  req.session = null
-  res.redirect("back")
+  req.session.destroy((err) => {
+    if (err) throw err
+    res.redirect("back")
+  })
 })
 
 module.exports = authRouter
