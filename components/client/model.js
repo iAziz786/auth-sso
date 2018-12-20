@@ -23,12 +23,6 @@ const ClientSchema = new Schema({
     required: true
   },
 
-  clientId: {
-    type: String,
-    unique: true,
-    required: true
-  },
-
   clientSecret: {
     type: String,
     required: true
