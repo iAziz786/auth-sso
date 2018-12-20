@@ -5,7 +5,7 @@ const { User } = require("../components/user/model")
 const localStrategy = new LocalStrategy(async (username, password, done) => {
   try {
     const user = await User.findByUsername(username)
-    if (typeof user !== "object" && user == null) {
+    if (user == null) {
       return done(null, false)
     }
     if (!(await user.comparePassword(password))) {
