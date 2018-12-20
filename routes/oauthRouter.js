@@ -21,13 +21,19 @@ oauthRouter.get(
           message: `Client with id = ${client_id} has not been found`
         })
       }
-      // if (mathRedirectUri(client, redirect_uri)) {
-      const code = generateToken()
+      // TODO: make redirectUrl to plural (redirectUrls)
+      if (mathRedirectUri(client.redirectUri, redirect_uri)) {
+        const code = generateToken()
 
-      return res.redirect(
-        `${redirect_uri}?code=${code}&state=${encodeURIComponent(state)}`
-      )
-      // }
+        return res.redirect(
+          `${redirect_uri}?code=${code}&state=${encodeURIComponent(state)}`
+        )
+      }
+
+      return res.render("error", {
+        title: "Redirect URI Mismatch",
+        message: `${redirect_uri} did not match any of the registered URIs`
+      })
     } catch (err) {
       return res.render("404")
     }
