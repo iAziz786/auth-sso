@@ -13,10 +13,14 @@ oauthRouter.get(
   oauthServer.authorization,
   async (req, res) => {
     const { client_id, redirect_uri, state } = req.query
-    console.log(client_id)
     try {
       const client = await Client.findById(client_id)
-      console.log({ client })
+      if (client == null) {
+        return res.render("error", {
+          title: "Client not found",
+          message: `Client with id = ${client_id} has not been found`
+        })
+      }
       // if (mathRedirectUri(client, redirect_uri)) {
       const code = generateToken()
 
