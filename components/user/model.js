@@ -66,7 +66,8 @@ const addressSchema = new Schema({
 const UserSchema = new Schema(
   {
     name: {
-      type: String
+      type: String,
+      required: true
     },
 
     givenName: {

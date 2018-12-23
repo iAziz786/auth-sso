@@ -12,8 +12,8 @@ authRouter.post(
 // authRouter.post("/client/register", (req, res) => {})
 
 authRouter.post("/signup", async (req, res) => {
-  const { email, password, username } = req.body
-  if (!email || !password || !username) {
+  const { email, password, username, name } = req.body
+  if (!email || !password || !username || !name) {
     return res.status(422).json({
       error: true,
       message: "parameter missing"
@@ -24,7 +24,8 @@ authRouter.post("/signup", async (req, res) => {
     const user = await User.createNew({
       email: { value: email },
       username,
-      password
+      password,
+      name
     })
     if (user == null) {
       return res.status(409).json({

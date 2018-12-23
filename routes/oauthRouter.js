@@ -51,12 +51,8 @@ oauthRouter.get(
       })
     }
   }
-  // },
-  // (req, res) => {
-  //   const { redirect_uri, state } = req.query
-  //   res.redirect(`${redirect_uri}?code=${code[0].value}&state=${state}`)
-  // }
 )
+
 oauthRouter.post("/oauth/token", async (req, res, next) => {
   try {
     const { client_id, client_secret, code: authorizationCode } = req.body

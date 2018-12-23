@@ -1,8 +1,8 @@
 function createNew(data) {
   return new Promise(async (resolve, reject) => {
     const User = this
-    const { username, password, email } = data
-    if (!username || !password || !email) {
+    const { username, password, email, name } = data
+    if (!username || !password || !email || !name) {
       return reject()
     }
 
@@ -12,7 +12,7 @@ function createNew(data) {
       return reject()
     }
 
-    user = await User.create({ username, password, email })
+    user = await User.create({ username, password, email, name })
     resolve(user)
   })
 }
