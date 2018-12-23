@@ -44,7 +44,7 @@ oauthRouter.get(
   //   res.redirect(`${redirect_uri}?code=${code[0].value}&state=${state}`)
   // }
 )
-oauthRouter.post("/oauth/token", (req, res, next) => {
+oauthRouter.post("/oauth/token", async (req, res, next) => {
   const { client_id } = req.body
   jwt.sign(
     {
@@ -55,8 +55,9 @@ oauthRouter.post("/oauth/token", (req, res, next) => {
       name: "Aziz",
       family_name: "Mohammad",
       dob: "01-01-1991",
-      email: "test@gmail.com",
-      email_verified: true
+      email: "test@email.com",
+      email_verified: true,
+      preferred_username: "aziz"
     },
     process.env.JWT_SECRET,
     { expiresIn: "1 hour" },
