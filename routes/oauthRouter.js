@@ -1,8 +1,10 @@
 const { Router } = require("express")
+const ms = require("ms")
 const jwt = require("jsonwebtoken")
 
 const oauthServer = require("../middlewares/oauthServer")
 const { Client } = require("../components/client/model")
+const { Code } = require("../components/code/model")
 const mathRedirectUri = require("../utils/matchRedirectUri")
 const generateToken = require("../utils/generateToken")
 
@@ -13,6 +15,8 @@ oauthRouter.get(
   oauthServer.authorization,
   async (req, res) => {
     const { client_id, redirect_uri, state } = req.query
+    const loggedInUserId = req.user._id
+
     try {
       const client = await Client.findById(client_id)
       if (client == null) {
@@ -25,6 +29,12 @@ oauthRouter.get(
       if (mathRedirectUri(client.redirectUri, redirect_uri)) {
         const code = generateToken()
 
+        await Code.create({
+          _id: code,
+          expiresAt: Date.now() + ms("1 hour"),
+          grants: ["profile"],
+          user: loggedInUserId
+        })
         return res.redirect(
           `${redirect_uri}?code=${code}&state=${encodeURIComponent(state)}`
         )
@@ -35,7 +45,10 @@ oauthRouter.get(
         message: `${redirect_uri} did not match any of the registered URIs`
       })
     } catch (err) {
-      return res.render("404")
+      return res.render("error", {
+        title: "Something went wrong",
+        message: "We faced an unexpected error. We're working on that"
+      })
     }
   }
   // },
