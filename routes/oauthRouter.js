@@ -58,31 +58,63 @@ oauthRouter.get(
   // }
 )
 oauthRouter.post("/oauth/token", async (req, res, next) => {
-  const { client_id } = req.body
-  jwt.sign(
-    {
-      iss: process.env.AUTH_SERVER,
-      sub: "sioafjiasdfiosf",
-      aud: client_id,
-      iat: Date.now(),
-      name: "Aziz",
-      family_name: "Mohammad",
-      dob: "01-01-1991",
-      email: "test@email.com",
-      email_verified: true,
-      preferred_username: "aziz"
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "1 hour" },
-    (err, id_token) => {
-      if (err) throw next(err)
-      res.status(200).json({
-        id_token,
-        access_token: generateToken(),
-        refresh_token: generateToken()
+  try {
+    const { client_id, client_secret, code: authorizationCode } = req.body
+    const client = await Client.findById(client_id)
+
+    if (!client.didSecretMatch(client_secret)) {
+      return res.status(401).json({
+        error: true,
+        message: "client_secret did not matched"
       })
     }
-  )
+
+    const code = await Code.findById(authorizationCode).populate("user")
+
+    if (!code) {
+      return res.status(401).json({
+        error: true,
+        message: "incorrect authorization code"
+      })
+    }
+
+    if (code.hasExpired()) {
+      return res.status(401).json({
+        error: true,
+        message: "authorization code has been expired"
+      })
+    }
+    const { user } = code
+    jwt.sign(
+      {
+        iss: process.env.AUTH_SERVER,
+        sub: "sioafjiasdfiosf",
+        aud: client_id,
+        iat: Date.now(),
+        name: user.name,
+        family_name: user.name,
+        birthday: user.birthday,
+        email: user.email.value,
+        email_verified: user.email.isVerified,
+        preferred_username: user.username
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1 hour" },
+      (err, id_token) => {
+        if (err) throw next(err)
+        return res.status(200).json({
+          id_token,
+          access_token: generateToken(),
+          refresh_token: generateToken()
+        })
+      }
+    )
+  } catch (err) {
+    return res.status(417).json({
+      error: true,
+      message: "Some error happend"
+    })
+  }
 })
 
 module.exports = oauthRouter

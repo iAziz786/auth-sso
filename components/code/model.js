@@ -27,5 +27,7 @@ const CodeSchema = new Schema(
   { timestamps: true }
 )
 
+CodeSchema.methods.hasExpired = require("./hasExpired")
+
 const Code = mainConnection.model("Code", CodeSchema)
 exports.Code = Code

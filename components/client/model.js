@@ -36,6 +36,7 @@ const ClientSchema = new Schema({
 })
 
 ClientSchema.statics.findByOwner = findByOwner
+ClientSchema.methods.didSecretMatch = require("./didSecretMatch")
 
 const Client = mainConnection.model("Client", ClientSchema)
 exports.Client = Client
