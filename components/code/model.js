@@ -22,6 +22,10 @@ const CodeSchema = new Schema(
     user: {
       type: ObjectId,
       ref: "User"
+    },
+
+    nonce: {
+      type: String
     }
   },
   { timestamps: true }

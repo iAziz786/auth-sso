@@ -14,7 +14,7 @@ oauthRouter.get(
   "/oauth/authorize",
   oauthServer.authorization,
   async (req, res) => {
-    const { client_id, redirect_uri, state } = req.query
+    const { client_id, redirect_uri, state, nonce } = req.query
     const loggedInUserId = req.user._id
 
     try {
@@ -33,7 +33,8 @@ oauthRouter.get(
           _id: code,
           expiresAt: Date.now() + ms("1 hour"),
           grants: ["profile"],
-          user: loggedInUserId
+          user: loggedInUserId,
+          nonce
         })
         return res.redirect(
           `${redirect_uri}?code=${code}&state=${encodeURIComponent(state)}`
@@ -80,7 +81,7 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
         message: "authorization code has been expired"
       })
     }
-    const { user } = code
+    const { user, nonce } = code
     jwt.sign(
       {
         iss: process.env.AUTH_SERVER,
@@ -88,6 +89,7 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
         aud: client_id,
         iat: Date.now(),
         name: user.name,
+        nonce,
         family_name: user.name,
         birthday: user.birthday,
         email: user.email.value,
