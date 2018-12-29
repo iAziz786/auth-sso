@@ -2,7 +2,7 @@ const { Router } = require("express")
 const ms = require("ms")
 const jwt = require("jsonwebtoken")
 
-const oauthServer = require("../middlewares/oauthServer")
+const ensureLoggedIn = require("../middlewares/ensureLoggedIn")
 const { Client } = require("../components/client/model")
 const { Code } = require("../components/code/model")
 const mathRedirectUri = require("../utils/matchRedirectUri")
@@ -10,49 +10,45 @@ const generateToken = require("../utils/generateToken")
 
 const oauthRouter = Router()
 
-oauthRouter.get(
-  "/oauth/authorize",
-  oauthServer.authorization,
-  async (req, res) => {
-    const { client_id, redirect_uri, state, nonce } = req.query
-    const loggedInUserId = req.user._id
+oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
+  const { client_id, redirect_uri, state, nonce } = req.query
+  const loggedInUserId = req.user._id
 
-    try {
-      const client = await Client.findById(client_id)
-      if (client == null) {
-        return res.render("error", {
-          title: "Client not found",
-          message: `Client with id = ${client_id} has not been found`
-        })
-      }
-      // TODO: make redirectUrl to plural (redirectUrls)
-      if (mathRedirectUri(client.redirectUri, redirect_uri)) {
-        const code = generateToken()
-
-        await Code.create({
-          _id: code,
-          expiresAt: Date.now() + ms("1 hour"),
-          grants: ["profile"],
-          user: loggedInUserId,
-          nonce
-        })
-        return res.redirect(
-          `${redirect_uri}?code=${code}&state=${encodeURIComponent(state)}`
-        )
-      }
-
+  try {
+    const client = await Client.findById(client_id)
+    if (client == null) {
       return res.render("error", {
-        title: "Redirect URI Mismatch",
-        message: `${redirect_uri} did not match any of the registered URIs`
-      })
-    } catch (err) {
-      return res.render("error", {
-        title: "Something went wrong",
-        message: "We faced an unexpected error. We're working on that"
+        title: "Client not found",
+        message: `Client with id = ${client_id} has not been found`
       })
     }
+    // TODO: make redirectUrl to plural (redirectUrls)
+    if (mathRedirectUri(client.redirectUri, redirect_uri)) {
+      const code = generateToken()
+
+      await Code.create({
+        _id: code,
+        expiresAt: Date.now() + ms("1 hour"),
+        grants: ["profile"],
+        user: loggedInUserId,
+        nonce
+      })
+      return res.redirect(
+        `${redirect_uri}?code=${code}&state=${encodeURIComponent(state)}`
+      )
+    }
+
+    return res.render("error", {
+      title: "Redirect URI Mismatch",
+      message: `${redirect_uri} did not match any of the registered URIs`
+    })
+  } catch (err) {
+    return res.render("error", {
+      title: "Something went wrong",
+      message: "We faced an unexpected error. We're working on that"
+    })
   }
-)
+})
 
 oauthRouter.post("/oauth/token", async (req, res, next) => {
   try {
