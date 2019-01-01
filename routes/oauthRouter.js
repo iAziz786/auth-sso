@@ -78,6 +78,7 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
       })
     }
     const { user, nonce } = code
+    const expiresAge = "1 hour"
     jwt.sign(
       {
         iss: process.env.AUTH_SERVER,
@@ -93,13 +94,15 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
         preferred_username: user.username
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1 hour" },
+      { expiresIn: expiresAge },
       (err, id_token) => {
         if (err) throw next(err)
         res.setHeader("Cache-Control", "no-store")
         res.setHeader("Pragma", "no-cache")
         return res.status(200).json({
           id_token,
+          token_type: "Bearer",
+          expires_in: ms(expiresAge) / 1000,
           access_token: generateToken(),
           refresh_token: generateToken()
         })
