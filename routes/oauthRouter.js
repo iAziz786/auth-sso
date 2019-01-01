@@ -31,6 +31,7 @@ oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
         expiresAt: Date.now() + ms("1 hour"),
         scope: scope.split(" "),
         user: loggedInUserId,
+        issuedToClient: client_id,
         nonce
       })
       return res.redirect(
@@ -57,7 +58,7 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
 
     if (!client.didSecretMatch(client_secret)) {
       return res.status(401).json({
-        error: true,
+        error: "invalid_client",
         message: "client_secret did not matched"
       })
     }
@@ -68,6 +69,13 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
       return res.status(401).json({
         error: "invalid_client",
         error_description: "incorrect authorization code"
+      })
+    }
+
+    if (String(code.issuedToClient) !== client_id) {
+      return res.status(401).json({
+        error: "invalid_grant",
+        error_description: "authorization code was not issued to this client"
       })
     }
 

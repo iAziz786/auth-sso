@@ -24,6 +24,11 @@ const CodeSchema = new Schema(
       ref: "User"
     },
 
+    issuedToClient: {
+      type: ObjectId,
+      ref: "Client"
+    },
+
     nonce: {
       type: String
     }
