@@ -55,7 +55,7 @@ oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
 
 oauthRouter.post("/oauth/token", async (req, res, next) => {
   try {
-    const { client_id, client_secret, code: authorizationCode } = req.body
+    const { client_id, client_secret, code } = req.body
     const client = await Client.findById(client_id)
 
     if (!client.didSecretMatch(client_secret)) {
@@ -65,29 +65,29 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
       })
     }
 
-    const code = await Code.findById(authorizationCode).populate("user")
+    const authorizationCode = await Code.findById(code).populate("user")
 
-    if (!code) {
+    if (!authorizationCode) {
       return res.status(400).json({
         error: "invalid_client",
         error_description: "incorrect authorization code"
       })
     }
 
-    if (String(code.issuedToClient) !== client_id) {
+    if (String(authorizationCode.issuedToClient) !== client_id) {
       return res.status(400).json({
         error: "invalid_grant",
         error_description: "authorization code was not issued to this client"
       })
     }
 
-    if (code.hasExpired()) {
+    if (authorizationCode.hasExpired()) {
       return res.status(400).json({
         error: "invalid_grant",
         error_description: "authorization code has been expired"
       })
     }
-    const { user, nonce } = code
+    const { user, nonce } = authorizationCode
     const expiresAge = "1 hour"
     jwt.sign(
       {
