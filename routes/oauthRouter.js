@@ -96,6 +96,8 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
       { expiresIn: "1 hour" },
       (err, id_token) => {
         if (err) throw next(err)
+        res.setHeader("Cache-Control", "no-store")
+        res.setHeader("Pragma", "no-cache")
         return res.status(200).json({
           id_token,
           access_token: generateToken(),
