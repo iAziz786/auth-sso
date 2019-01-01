@@ -11,7 +11,7 @@ const generateToken = require("../utils/generateToken")
 const oauthRouter = Router()
 
 oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
-  const { client_id, redirect_uri, state, nonce } = req.query
+  const { client_id, redirect_uri, state, nonce, scope } = req.query
   const loggedInUserId = req.user._id
 
   try {
@@ -29,7 +29,7 @@ oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
       await Code.create({
         _id: code,
         expiresAt: Date.now() + ms("1 hour"),
-        grants: ["profile"],
+        scope: scope.split(" "),
         user: loggedInUserId,
         nonce
       })

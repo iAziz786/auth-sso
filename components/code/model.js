@@ -14,9 +14,9 @@ const CodeSchema = new Schema(
       type: Date
     },
 
-    grants: {
+    scope: {
       type: [String],
-      enum: ["profile"]
+      enum: ["openid", "profile", "email", "address", "phone", "offline_access"]
     },
 
     user: {
