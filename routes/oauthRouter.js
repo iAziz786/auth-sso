@@ -66,15 +66,15 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
 
     if (!code) {
       return res.status(401).json({
-        error: true,
-        message: "incorrect authorization code"
+        error: "invalid_client",
+        error_description: "incorrect authorization code"
       })
     }
 
     if (code.hasExpired()) {
       return res.status(401).json({
-        error: true,
-        message: "authorization code has been expired"
+        error: "invalid_grant",
+        error_description: "authorization code has been expired"
       })
     }
     const { user, nonce } = code
@@ -106,10 +106,7 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
       }
     )
   } catch (err) {
-    return res.status(417).json({
-      error: true,
-      message: "Some error happend"
-    })
+    throw new Error(err)
   }
 })
 
