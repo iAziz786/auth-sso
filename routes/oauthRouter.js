@@ -97,6 +97,9 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
       { expiresIn: expiresAge },
       (err, id_token) => {
         if (err) throw next(err)
+        // According to the specification all token responses that contains tokens,
+        // secrets, or other sensitive information MUST include the following headers
+        // fields and values
         res.setHeader("Cache-Control", "no-store")
         res.setHeader("Pragma", "no-cache")
         return res.status(200).json({
