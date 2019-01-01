@@ -92,7 +92,7 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
     jwt.sign(
       {
         iss: process.env.AUTH_SERVER,
-        sub: "sioafjiasdfiosf",
+        sub: user._id,
         aud: client_id,
         iat: Date.now(),
         name: user.name,
