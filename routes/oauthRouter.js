@@ -28,7 +28,9 @@ oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
 
       await Code.create({
         _id: code,
-        expiresAt: Date.now() + ms("1 hour"),
+        // A maximum authorization code lifetime of 10 minutes is RECOMMENDED.
+        // https://tools.ietf.org/html/rfc6749#section-4.1.2
+        expiresAt: Date.now() + ms("10 minutes"),
         scope: scope.split(" "),
         user: loggedInUserId,
         issuedToClient: client_id,
