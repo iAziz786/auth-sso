@@ -59,7 +59,7 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
     const client = await Client.findById(client_id)
 
     if (!client.didSecretMatch(client_secret)) {
-      return res.status(401).json({
+      return res.status(400).json({
         error: "invalid_client",
         message: "client_secret did not matched"
       })
@@ -68,21 +68,21 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
     const code = await Code.findById(authorizationCode).populate("user")
 
     if (!code) {
-      return res.status(401).json({
+      return res.status(400).json({
         error: "invalid_client",
         error_description: "incorrect authorization code"
       })
     }
 
     if (String(code.issuedToClient) !== client_id) {
-      return res.status(401).json({
+      return res.status(400).json({
         error: "invalid_grant",
         error_description: "authorization code was not issued to this client"
       })
     }
 
     if (code.hasExpired()) {
-      return res.status(401).json({
+      return res.status(400).json({
         error: "invalid_grant",
         error_description: "authorization code has been expired"
       })
