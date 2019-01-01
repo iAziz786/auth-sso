@@ -3,7 +3,7 @@
  */
 function hasExpired() {
   const user = this
-  if (Date.now() > user.expiredAt) {
+  if (Date.now() > user.expiresAt) {
     return true
   }
   return false
