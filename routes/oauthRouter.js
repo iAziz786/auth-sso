@@ -11,7 +11,7 @@ const generateToken = require("../utils/generateToken")
 const oauthRouter = Router()
 
 oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
-  const { client_id, redirect_uri, state, nonce, scope } = req.query
+  const { client_id, redirect_uri, state, nonce, scope = "" } = req.query
   const loggedInUserId = req.user._id
 
   try {
@@ -31,7 +31,7 @@ oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
         // A maximum authorization code lifetime of 10 minutes is RECOMMENDED.
         // https://tools.ietf.org/html/rfc6749#section-4.1.2
         expiresAt: Date.now() + ms("10 minutes"),
-        scope: scope.split(" "),
+        scope: scope.split(" ").fliter(Boolean),
         user: loggedInUserId,
         issuedToClient: client_id,
         nonce
