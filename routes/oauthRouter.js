@@ -1,10 +1,12 @@
 const { Router } = require("express")
+const cors = require("cors")
 const ms = require("ms")
 const jwt = require("jsonwebtoken")
 
 const ensureLoggedIn = require("../middlewares/ensureLoggedIn")
 const { Client } = require("../components/client/model")
 const { Code } = require("../components/code/model")
+const { Token } = require("../components/token/model")
 const mathRedirectUri = require("../utils/matchRedirectUri")
 const generateToken = require("../utils/generateToken")
 
@@ -24,20 +26,45 @@ oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
     }
     // TODO: make redirectUrl to plural (redirectUrls)
     if (mathRedirectUri(client.redirectUri, redirect_uri)) {
-      const code = generateToken()
+      const authorizationCode = generateToken()
+      const accessToken = generateToken()
+      const refreshToken = generateToken()
+      const allScopes = scope.split(" ").filter(Boolean)
 
       await Code.create({
-        _id: code,
+        value: authorizationCode,
         // A maximum authorization code lifetime of 10 minutes is RECOMMENDED.
         // https://tools.ietf.org/html/rfc6749#section-4.1.2
         expiresAt: Date.now() + ms("10 minutes"),
-        scope: scope.split(" ").filter(Boolean),
+        scope: allScopes,
         user: loggedInUserId,
         issuedToClient: client_id,
         nonce
       })
+
+      await Token.create({
+        value: accessToken,
+        scope: allScopes,
+        associatedAuthorizationCode: authorizationCode,
+        userAgreedTo: loggedInUserId,
+        expiresAt: Date.now() + ms("1 hour"),
+        tokenType: "access"
+      })
+
+      await Token.create({
+        value: refreshToken,
+        scope: allScopes,
+        associatedAuthorizationCode: authorizationCode,
+        associatedAccessToken: accessToken,
+        userAgreedTo: loggedInUserId,
+        expiresAt: Date.now() + ms("1 hour"),
+        tokenType: "refresh"
+      })
+
       return res.redirect(
-        `${redirect_uri}?code=${code}&state=${encodeURIComponent(state)}`
+        `${redirect_uri}?code=${authorizationCode}&state=${encodeURIComponent(
+          state
+        )}`
       )
     }
 
@@ -65,7 +92,9 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
       })
     }
 
-    const authorizationCode = await Code.findById(code).populate("user")
+    const authorizationCode = await Code.findOne({ value: code }).populate(
+      "user"
+    )
 
     if (!authorizationCode) {
       return res.status(400).json({
@@ -89,6 +118,14 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
     }
     const { user, nonce } = authorizationCode
     const expiresAge = "1 hour"
+    const accessToken = await Token.findOne({
+      associatedAuthorizationCode: code,
+      tokenType: "access"
+    })
+    const refreshToken = await Token.findOne({
+      associatedAuthorizationCode: code,
+      tokenType: "refresh"
+    })
     jwt.sign(
       {
         iss: process.env.AUTH_SERVER,
@@ -116,13 +153,80 @@ oauthRouter.post("/oauth/token", async (req, res, next) => {
           id_token,
           token_type: "Bearer",
           expires_in: ms(expiresAge) / 1000,
-          access_token: generateToken(),
-          refresh_token: generateToken()
+          access_token: accessToken.value,
+          refresh_token: refreshToken.value
         })
       }
     )
   } catch (err) {
     throw new Error(err)
+  }
+})
+
+oauthRouter.route("/oauth/userinfo").get(cors(), async (req, res) => {
+  const parts = req.headers && req.headers.authorization.split(" ")
+  if (parts.length === 2) {
+    const schema = parts[0]
+    const credentials = parts[1]
+    if (/^Bearer$/.test(schema)) {
+      const token = credentials
+      const authToken = await Token.findOne({ value: token }).populate(
+        "userAgreedTo"
+      )
+      const { userAgreedTo: user } = authToken
+      const info = {}
+      ;(authToken.scope || []).forEach((scopeType) => {
+        switch (scopeType) {
+          case "openid":
+            info.sub = authToken.userAgreedToToken
+            break
+          case "profile":
+            info.name = user.name
+            info.family_name = user.family_name
+            info.given_name = user.given_name
+            info.middle_name = user.middle_name
+            info.nickname = user.nickname
+            info.preferred_username = user.preferred_username
+            info.profile = user.profile
+            info.picture = user.picture
+            info.website = user.website
+            info.gender = user.gender
+            info.birthdate = user.birthdate
+            info.zoneinfo = user.zoneinfo
+            info.locale = user.locale
+            info.updated_at = user.updatedAt
+            break
+          case "email":
+            info.email = user.email.value
+            info.email_verified = user.email.isVerified
+            break
+          case "address":
+            info.address = user.address
+            break
+          case "phone":
+            info.phone_number = user.phoneNumber.value
+            info.phone_number_verified = user.phoneNumber.isVerified
+            break
+        }
+      })
+      return res.status(200).json(info)
+    } else {
+      return res
+        .status(400)
+        .setHeader(
+          "WWW-Authenticate",
+          'Bearer error="invalid_request" error_description="Authorization request MUST be sent as a Bearer Token"'
+        )
+        .send()
+    }
+  } else {
+    return res
+      .status(400)
+      .setHeader(
+        "WWW-Authenticate",
+        'Bearer error="invalid_request" error_description="Request header should contain Authorizaiton field"'
+      )
+      .send()
   }
 })
 

@@ -5,7 +5,7 @@ const { ObjectId } = Schema.Types
 
 const CodeSchema = new Schema(
   {
-    _id: {
+    value: {
       type: String,
       required: true
     },
