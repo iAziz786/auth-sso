@@ -4,21 +4,24 @@ const { ObjectId } = Schema.Types
 const { mainConnection } = require("../../config/mongoose.config")
 const findByOwner = require("./findByOwner")
 
-const ProjectSchema = new Schema({
-  name: {
-    type: String
-  },
+const ProjectSchema = new Schema(
+  {
+    name: {
+      type: String
+    },
 
-  ownerId: {
-    type: ObjectId,
-    ref: "User",
-    required: true
-  },
+    ownerId: {
+      type: ObjectId,
+      ref: "User",
+      required: true
+    },
 
-  clients: {
-    type: [{ type: ObjectId, ref: "Client" }]
-  }
-})
+    clients: {
+      type: [{ type: ObjectId, ref: "Client" }]
+    }
+  },
+  { timestamps: true }
+)
 
 ProjectSchema.statics.findByOwner = findByOwner
 
