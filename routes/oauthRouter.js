@@ -4,6 +4,7 @@ const ms = require("ms")
 const jwt = require("jsonwebtoken")
 
 const ensureLoggedIn = require("../middlewares/ensureLoggedIn")
+const promptUserConsent = require("../middlewares/promptUserConsent")
 const { Client } = require("../components/client/model")
 const { Code } = require("../components/code/model")
 const { Token } = require("../components/token/model")
@@ -12,73 +13,7 @@ const generateToken = require("../utils/generateToken")
 
 const oauthRouter = Router()
 
-oauthRouter.get("/oauth/authorize", ensureLoggedIn, async (req, res) => {
-  const { client_id, redirect_uri, state, nonce, scope = "" } = req.query
-  const loggedInUserId = req.user._id
-
-  try {
-    const client = await Client.findById(client_id)
-    if (client == null) {
-      return res.render("error", {
-        title: "Client not found",
-        message: `Client with id = ${client_id} has not been found`
-      })
-    }
-    // TODO: make redirectUrl to plural (redirectUrls)
-    if (mathRedirectUri(client.redirectUri, redirect_uri)) {
-      const authorizationCode = generateToken()
-      const accessToken = generateToken()
-      const refreshToken = generateToken()
-      const allScopes = scope.split(" ").filter(Boolean)
-
-      await Code.create({
-        value: authorizationCode,
-        // A maximum authorization code lifetime of 10 minutes is RECOMMENDED.
-        // https://tools.ietf.org/html/rfc6749#section-4.1.2
-        expiresAt: Date.now() + ms("10 minutes"),
-        scope: allScopes,
-        user: loggedInUserId,
-        issuedToClient: client_id,
-        nonce
-      })
-
-      await Token.create({
-        value: accessToken,
-        scope: allScopes,
-        associatedAuthorizationCode: authorizationCode,
-        userAgreedTo: loggedInUserId,
-        expiresAt: Date.now() + ms("1 hour"),
-        tokenType: "access"
-      })
-
-      await Token.create({
-        value: refreshToken,
-        scope: allScopes,
-        associatedAuthorizationCode: authorizationCode,
-        associatedAccessToken: accessToken,
-        userAgreedTo: loggedInUserId,
-        expiresAt: Date.now() + ms("1 hour"),
-        tokenType: "refresh"
-      })
-
-      return res.redirect(
-        `${redirect_uri}?code=${authorizationCode}&state=${encodeURIComponent(
-          state
-        )}`
-      )
-    }
-
-    return res.render("error", {
-      title: "Redirect URI Mismatch",
-      message: `${redirect_uri} did not match any of the registered URIs`
-    })
-  } catch (err) {
-    return res.render("error", {
-      title: "Something went wrong",
-      message: "We faced an unexpected error. We're working on that"
-    })
-  }
-})
+oauthRouter.get("/oauth/authorize", ensureLoggedIn, promptUserConsent)
 
 oauthRouter.post("/oauth/token", async (req, res, next) => {
   try {
@@ -204,8 +139,9 @@ oauthRouter.route("/oauth/userinfo").get(cors(), async (req, res) => {
             info.address = user.address
             break
           case "phone":
-            info.phone_number = user.phoneNumber.value
-            info.phone_number_verified = user.phoneNumber.isVerified
+            info.phone_number = user.phoneNumber && user.phoneNumber.value
+            info.phone_number_verified =
+              user.phoneNumber && user.phoneNumber.isVerified
             break
         }
       })
@@ -229,5 +165,107 @@ oauthRouter.route("/oauth/userinfo").get(cors(), async (req, res) => {
       .send()
   }
 })
+
+oauthRouter
+  .route("/oauth/consent")
+  .get(async (req, res) => {
+    const { client_id, scope = "" } = req.session.oauth2
+    const client = await Client.findById(client_id)
+    const scopes = scope
+      .split(" ")
+      .filter(Boolean)
+      .filter((scope) => scope !== "openid")
+    if (typeof client === "object" && client != null) {
+      return res.render("consent", {
+        client_name: client.name,
+        scopes
+      })
+    } else {
+      return res.render("error", {
+        title: "Client not found",
+        message: `Client with id = ${client_id} has not been found`
+      })
+    }
+  })
+  .post(async (req, res) => {
+    const { consent } = req.body
+    const {
+      client_id,
+      redirect_uri,
+      state,
+      nonce,
+      scope = ""
+    } = req.session.oauth2
+    if (consent === "allow") {
+      const loggedInUserId = req.user._id
+
+      try {
+        const client = await Client.findById(client_id)
+        if (client == null) {
+          return res.render("error", {
+            title: "Client not found",
+            message: `Client with id = ${client_id} has not been found`
+          })
+        }
+        // TODO: make redirectUrl to plural (redirectUrls)
+        if (mathRedirectUri(client.redirectUri, redirect_uri)) {
+          const authorizationCode = generateToken()
+          const accessToken = generateToken()
+          const refreshToken = generateToken()
+          const allScopes = scope.split(" ").filter(Boolean)
+
+          await Code.create({
+            value: authorizationCode,
+            // A maximum authorization code lifetime of 10 minutes is RECOMMENDED.
+            // https://tools.ietf.org/html/rfc6749#section-4.1.2
+            expiresAt: Date.now() + ms("10 minutes"),
+            scope: allScopes,
+            user: loggedInUserId,
+            issuedToClient: client_id,
+            nonce
+          })
+
+          await Token.create({
+            value: accessToken,
+            scope: allScopes,
+            associatedAuthorizationCode: authorizationCode,
+            userAgreedTo: loggedInUserId,
+            expiresAt: Date.now() + ms("1 hour"),
+            tokenType: "access"
+          })
+
+          await Token.create({
+            value: refreshToken,
+            scope: allScopes,
+            associatedAuthorizationCode: authorizationCode,
+            associatedAccessToken: accessToken,
+            userAgreedTo: loggedInUserId,
+            expiresAt: Date.now() + ms("1 hour"),
+            tokenType: "refresh"
+          })
+
+          return res.redirect(
+            `${redirect_uri}?code=${authorizationCode}&state=${encodeURIComponent(
+              state
+            )}`
+          )
+        }
+
+        return res.render("error", {
+          title: "Redirect URI Mismatch",
+          message: `${redirect_uri} did not match any of the registered URIs`
+        })
+      } catch (err) {
+        return res.render("error", {
+          title: "Something went wrong",
+          message: "We faced an unexpected error. We're working on that"
+        })
+      }
+    } else {
+      return res.redirect(
+        `${redirect_uri}?error=access_denied&state=${encodeURIComponent(state)}`
+      )
+    }
+  })
 
 module.exports = oauthRouter

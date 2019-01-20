@@ -1,0 +1,21 @@
+include ./includes/header.pug
+
+block title
+    title Consent 
+
+block body
+  p
+    strong #{client_name} 
+    | will be able to view:
+  ul
+    each scope in scopes
+      li Your basic #{scope} info
+  
+  display(style="display: flex;")
+    form(method="post")
+      input(type="hidden", name="consent" value="deny")
+      button(value="allow" type="submit") Deny
+
+    form(method="post")
+      input(type="hidden", name="consent" value="allow")
+      button(value="allow" type="submit") Allow

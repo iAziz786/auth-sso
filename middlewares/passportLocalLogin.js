@@ -2,7 +2,6 @@ const passport = require("passport")
 
 function passportLocalLogin(req, res, next) {
   const { username, password } = req.body
-  const { returnTo = "/" } = req.session || {}
   if (!username || !password) {
     return res.status(403).json({
       error: true,
@@ -27,7 +26,7 @@ function passportLocalLogin(req, res, next) {
         return next(err)
       }
 
-      return res.redirect(returnTo)
+      next()
     })
   })(req, res, next)
 }

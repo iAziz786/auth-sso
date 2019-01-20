@@ -5,7 +5,10 @@ const passportLocalLogin = require("../middlewares/passportLocalLogin")
 
 const authRouter = Router()
 
-authRouter.post("/login", passportLocalLogin)
+authRouter.post("/login", passportLocalLogin, (req, res) => {
+  const { returnTo = "/" } = req.session || {}
+  return res.redirect(returnTo)
+})
 
 // authRouter.post("/client/register", (req, res) => {})
 
