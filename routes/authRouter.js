@@ -36,7 +36,8 @@ authRouter.post("/signup", async (req, res) => {
     }
     req.login(user, (err) => {
       if (err) throw err
-      res.redirect("back")
+      const { returnTo = "/" } = req.session | {}
+      return res.redirect(returnTo)
     })
   } catch (err) {
     throw err
