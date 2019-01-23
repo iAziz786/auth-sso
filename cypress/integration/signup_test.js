@@ -1,6 +1,6 @@
 describe("Login", () => {
   it("signup correctly", () => {
-    cy.visit(`http://localhost:3000`)
+    cy.visit("/")
     cy.contains("Signup").click()
     cy.url().should("include", "/signup")
     cy.get("#email")
