@@ -50,6 +50,7 @@
   "devDependencies": {
     "coveralls": "^3.0.2",
     "cypress": "^3.1.4",
+    "cypress-testing-library": "^2.3.5",
     "eslint": "^5.9.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-plugin-cypress": "^2.2.0",
