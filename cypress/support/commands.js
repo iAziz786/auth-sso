@@ -23,3 +23,24 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+import "cypress-testing-library/add-commands"
+
+Cypress.Commands.add("createUser", () => {
+  const user = {
+    username: "test",
+    password: "mysupersecretpasswordisthis",
+    name: "Test User",
+    email: "test@example.com"
+  }
+  cy.request({
+    method: "POST",
+    url: "/signup",
+    body: user
+  })
+    .request({
+      method: "GET",
+      url: "/logout"
+    })
+    .then(() => user)
+})
