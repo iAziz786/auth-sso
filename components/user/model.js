@@ -25,8 +25,7 @@ const phoneSchema = new Schema(
   {
     value: {
       type: String,
-      unique: true,
-      required: true
+      default: ""
     },
 
     isVerified: {
@@ -111,7 +110,11 @@ const UserSchema = new Schema(
       type: String
     },
 
-    phoneNumber: phoneSchema,
+    phoneNumber: {
+      type: phoneSchema,
+      unique: false,
+      default: phoneSchema
+    },
 
     address: addressSchema,
 
