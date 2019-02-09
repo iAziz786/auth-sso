@@ -4,6 +4,8 @@
 
 auth-sso is an OpenID Connect authorization server. Currently only support authorization code flow.
 
+**Website is on Heroku free Dyno so give it around 10 - 15 second before warming up**.
+
 This is work in progress. And support for implicit and hybrid flow will be added soon.
 
 ### Incompletion in current flow
